@@ -1,7 +1,7 @@
 (ns soundcloud-cli.http
-  :require [[cljs.core.async :refer [<! >! chan alts! close!]]
-            [cljs.nodejs :as node]]
-  :require-macro [[cljs.core.async.macros :refer [go]]])
+  (:require [cljs.core.async :as async :refer [<! >! chan alts! close!]]
+            [cljs.nodejs :as node])
+  (:require-macros [cljs.core.async.macros :refer [go]]))
 
 ;; (defn get [url]
 ;;   "wrapper of node/http get function, takes an url and optional map of options, returns vector of [error-channel result channel]"
@@ -22,4 +22,4 @@
                      (do
                        (close! res-chan)
                        (>! err-chan err)))))
-      [err-chan res-chan])
+      [err-chan res-chan])))
