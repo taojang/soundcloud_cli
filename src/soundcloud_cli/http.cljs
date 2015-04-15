@@ -25,5 +25,5 @@
                     (.on res "data" data-cb)
                     (.on res "error" err-cb)
                     (.on res "end" end-cb))]
-    (.on (.get node-http url get-cb) "error" err-cb)
+    (-> (.get node-http url get-cb) (.on "error" err-cb))
     [err-chan res-chan]))
