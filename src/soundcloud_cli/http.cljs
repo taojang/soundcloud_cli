@@ -3,23 +3,27 @@
             [cljs.nodejs :as node])
   (:require-macros [cljs.core.async.macros :refer [go]]))
 
-;; (defn get [url]
-;;   "wrapper of node/http get function, takes an url and optional map of options, returns vector of [error-channel result channel]"
-;;   (let [err-chan (chan)
-;;         res-chan (chan)]
-;;     (go )))
+(def node-http (node/require "http"))
 
-(def fs-chans
-  (let [err-chan (chan)
-        res-chan (chan)]
-    (go
-      (.readFile fs "/tmp/testing" "utf8"
-                 (fn [err, res]
-                   (if (nil? err)
-                     (do
-                       (close! err-chan)
-                       (>! res-chan res))
-                     (do
-                       (close! res-chan)
-                       (>! err-chan err)))))
-      [err-chan res-chan])))
+(defn get [url]
+  "wrapper of node/http get function, takes target url, returns vector of [error-channel response-channel]"
+  (let [err-chan  (chan)
+        res-chan  (chan)
+        data      (atom "")
+        response  (atom {})
+        data-cb   (fn [chunk] (swap! data #(str % chunk) @data))
+        err-cb    (fn [err] (go (>! err-chan err)
+                                (close! res-chan) (close! err-chan)))
+        end-cb    (fn []
+                    (go (>! res-chan (assoc @response :body @data))
+                        (close! res-chan) (close! err-chan)))
+        get-cb    (fn [res]
+                    (swap! response #(-> %
+                                         (assoc :status  (.-statusCode res))
+                                         (assoc :headers (js->clj (.-headers res))))
+                           @response)
+                    (.on res "data" data-cb)
+                    (.on res "error" err-cb)
+                    (.on res "end" end-cb))]
+    (.on (.get node-http url get-cb) "error" err-cb)
+    [err-chan res-chan]))
