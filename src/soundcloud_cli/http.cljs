@@ -5,8 +5,9 @@
 
 (def node-http (node/require "http"))
 
-(defn get [url]
+(defn get
   "wrapper of node/http get function, takes target url, returns vector of [error-channel response-channel]"
+  [url]
   (let [err-chan  (chan)
         res-chan  (chan)
         data      (atom "")
