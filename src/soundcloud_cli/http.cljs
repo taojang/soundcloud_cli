@@ -7,6 +7,10 @@
 
 (def node-url (node/require "url"))
 
+(defn atom?
+  [arg]
+  (= (type (atom)) (type arg)))
+
 (defn chan-or-atom?
   "Determine if supplied argument is a channel or vector"
   [arg]
@@ -34,7 +38,7 @@
   [out & others]
   (let [fns (map gen-put (conj others out))]
     (fn [data]
-      (doall (map #(apply % data) fns)))))
+      (doall (map #(apply % [data]) fns)))))
 
 (defn- gen-end-cb
   [out & others]
@@ -42,6 +46,14 @@
     (fn []
       (doseq [f fns]
         (f)))))
+
+(defn- gen-err-cb
+  [err-out & others]
+  (let [close-out! (apply gen-end-cb (conj others err-out))
+        put-err! (gen-put err-out)]
+    (fn [err]
+      (put-err! err)
+      (close-out!))))
 
 
 (defn get
