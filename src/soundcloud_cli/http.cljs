@@ -24,9 +24,9 @@
 
 (defn- gen-close
   "Generate a function to close a channel or do nothing for atom"
-  [c]
-  (condp = (chan-or-atom? c)
-    ::channel (fn [] (close! c))
+  [out]
+  (condp = (chan-or-atom? out)
+    ::channel (fn [] (close! out))
     ::atom    (fn [] nil)))
 
 (defn- gen-data-cb
@@ -37,8 +37,8 @@
       (doall (map #(apply % data) fns)))))
 
 (defn- gen-end-cb
-  [c & others]
-  (let [fns (map gen-close (conj others c))]
+  [out & others]
+  (let [fns (map gen-close (conj others out))]
     (fn []
       (doseq [f fns]
         (f)))))
