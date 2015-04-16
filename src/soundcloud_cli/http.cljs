@@ -56,7 +56,7 @@
       (close-out!))))
 
 
-(defn get
+(defn http-get
   "Wrapper of node/http get function, takes target url, returns vector of [error-channel response-channel]"
   [url]
   (let [err-chan  (chan)
