@@ -55,6 +55,13 @@
       (put-err! err)
       (close-out!))))
 
+(defn http-req
+  "Wrapper http(s) request function on node.js."
+  [opts & {:keys [out-type in-type input]
+           :or {out-type :vec in-type :vec input (atom [])}
+           :as default}]
+  nil)
+
 
 (defn http-get
   "Wrapper of node/http get function, takes target url, returns vector of [error-channel response-channel]"
