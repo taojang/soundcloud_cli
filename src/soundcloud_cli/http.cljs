@@ -17,7 +17,7 @@
   (cond
     (satisfies? cljs.core.async.impl.protocols/Channel arg) ::channel
     (atom? arg) ::atom
-    :else ::unknown))
+    :else (throw js/Error "unsupported argument type")))
 
 (defn- gen-put
   "Generate a function put data into channel or conj to vector inside an atom"
