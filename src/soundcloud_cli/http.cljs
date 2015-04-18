@@ -39,18 +39,10 @@
     ::channel (fn [] (close! out))
     ::atom    (fn [] nil)))
 
-(defn- gen-data-cb
-  "Generate callback function for response on data event. Take either atom or chan as argument. If there are multiple output channels/atoms, generated callback will put same data on all of them"
-  [out & others]
-  (let [fns (map gen-put (conj others out))]
-    (fn [data]
-      (doall (map #(apply % [data]) fns)))))
-
 (defn- gen-end-cb
   [out & others]
   (let [fns (map gen-close (conj others out))]
     (fn []
-      (println "end-cb")
       (doseq [f fns]
         (f)))))
 
@@ -65,7 +57,6 @@
 (defn- request-cb
   [err-chan res-chan body-chan]
   (fn [res]
-    (println "pausing res")
     (.pause res)
     (go (>! res-chan {:status (.-statusCode res) :headers (js->clj (.-headers res))}))
     (.on res "readable"
