@@ -6,8 +6,7 @@
                  [org.clojure/clojurescript "0.0-3165"]
                  [org.clojure/core.async "0.1.346.0-17112a-alpha"]]
 
-  :node-dependencies [[source-map-support "0.2.10"]
-                      [term-list "0.2.1"]]
+  :node-dependencies [[source-map-support "0.2.10"]]
 
   :plugins [[lein-cljsbuild "1.0.5"]
             [lein-npm "0.5.0"]
@@ -30,7 +29,7 @@
               :compiler {
                 :output-to     "out/test/node/soundcloud_cli.js"
                 :output-dir    "out/test/node"
-                :optimizations :advanced}}]
+                :optimizations :simple}}]
 
      :test-commands {"unit-tests" ["node" :node-runner "out/test/node/soundcloud_cli.js"]}}
 
