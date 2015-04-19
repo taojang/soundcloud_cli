@@ -89,3 +89,11 @@
     (.write req input)
     (.end req)
     {:err-chan err-chan :res-chan res-chan :body-chan body-chan}))
+
+
+(defn create-server
+  "Create a http server on given port with supplied callback."
+  [cb port]
+  (let [s (.createServer node-http cb)]
+    (.listen s port)
+    s))

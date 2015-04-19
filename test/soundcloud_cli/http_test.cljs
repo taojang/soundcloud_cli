@@ -16,8 +16,12 @@
             - result in res-chan is a map
             - contains keys (:status :headers :body)
             - body is a chan"
-    (let [chans (http/request {:hostname "ipecho.net"
-                               :path "/plain"
+    (let [req-cb (fn [req res]
+                   (.write res "pong!")
+                   (.end res))
+          server (http/create-server req-cb 3333)
+          chans (http/request {:hostname "localhost"
+                               :port 3333
                                :method "GET"})
           err-chan  (:err-chan chans)
           body-chan (:body-chan chans)
@@ -28,6 +32,8 @@
         (is (= true  (and (contains? chans :err-chan) (contains? chans :res-chan))))
         (is (= nil   (<! err-chan)))
         (is (= 200   (:status (<! res-chan))))
+        (is (= "pong!" (-> (<! body-chan) (str))))
+        (.close server)
       (done)))))
 
 (deftest chan-test
