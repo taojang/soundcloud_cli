@@ -8,33 +8,28 @@
 
 
 (deftest ^:async http-get
-  (testing "use http-req to perform get,using chan as output:
-            - should return a map
-            - map should have keys (:err-chan :res-chan)
-            - err-chan should be closed
+  (testing "use http-req to perform get, using chan as output:
             - res-chan has 1 value to take
             - result in res-chan is a map
-            - contains keys (:status :headers :body)
-            - body is a chan"
+            - contains keys (:status :headers :body)"
     (let [req-cb (fn [req res]
                    (.write res "pong!")
                    (.end res))
           server (http/create-server req-cb 3333)
-          chans (http/request {:hostname "localhost"
-                               :port 3333
-                               :method "GET"})
-          err-chan  (:err-chan chans)
-          body-chan (:body-chan chans)
-          res-chan  (:res-chan chans)]
+          res-ch (http/request {:uri "http://localhost:3333"
+                                :method "GET"})]
       (go
-        (is (= true  (map? chans)))
-        (is (= 3     (count chans)))
-        (is (= true  (and (contains? chans :err-chan) (contains? chans :res-chan))))
-        (is (= nil   (<! err-chan)))
-        (is (= 200   (:status (<! res-chan))))
-        (is (= "pong!" (-> (<! body-chan) (str))))
-        (.close server)
-      (done)))))
+        (let [res (<! res-ch)]
+          (is (= nil     (:err res)))
+          (is (= 200     (:status res)))
+          (is (= "pong!" (:body res)))
+          (.close server))
+        (done)))))
 
-(deftest chan-test
-  (is (= true (http/chan? (chan)))))
+(deftest ^:async core-async-test
+  (let [inputs (repeatedly 10000 #(go 1))]
+    (go (is (= 10000 (<! (reduce
+                           (fn [sum in]
+                             (go (+ (<! sum) (<! in))))
+                           inputs))))
+        (done))))

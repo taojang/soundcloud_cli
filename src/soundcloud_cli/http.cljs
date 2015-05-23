@@ -5,6 +5,7 @@
   (:require-macros [cljs.core.async.macros :refer [go go-loop]]))
 
 (def n-rq (node/require "request"))
+(def node-http (node/require "http"))
 
 (defn- rq-cb
   [res-chan]
@@ -15,7 +16,7 @@
     (go
       (>! res-chan {:status status
                     :headers (js->clj headers)
-                    :error error
+                    :err error
                     :body body})
       (close! res-chan)))))
 
@@ -25,3 +26,10 @@
   (let [res-chan (chan)]
     (n-rq (clj->js opts) (rq-cb res-chan))
     res-chan))
+
+(defn create-server
+  "Create a http server on given port with supplied callback."
+  [cb port]
+  (let [s (.createServer node-http cb)]
+    (.listen s port)
+    s))

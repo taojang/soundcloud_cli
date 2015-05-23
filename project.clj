@@ -2,8 +2,8 @@
   :description "Command line client for soundcloud"
   :url "http://example.com/FIXME"
 
-  :dependencies [[org.clojure/clojure "1.7.0-beta1"]
-                 [org.clojure/clojurescript "0.0-3165"]
+  :dependencies [[org.clojure/clojure "1.7.0-beta3"]
+                 [org.clojure/clojurescript "0.0-3269"]
                  [org.clojure/core.async "0.1.346.0-17112a-alpha"]]
 
   :node-dependencies [[source-map-support "0.2.10"]
@@ -18,19 +18,18 @@
   :cljsbuild {
     :builds [{:id "node"
               :source-paths ["src"]
-              :compiler {
-                :output-to     "out/soundcloud_cli.js"
-                :output-dir    "out"
-                :target        :nodejs
-                :optimizations :advanced
-                :pretty-print  true
-                :source-map    "out/soundcloud_cli.js.map"}}
+              :compiler {:output-to     "out/soundcloud_cli.js"
+                         :output-dir    "out"
+                         :target        :nodejs
+                         :optimizations :advanced
+                         :pretty-print  true
+                         :source-map    "out/soundcloud_cli.js.map"}}
              {:id "test-node"
               :source-paths ["src" "test"]
-              :compiler {
-                :output-to     "out/test/node/soundcloud_cli.js"
-                :output-dir    "out/test/node"
-                :optimizations :simple}}]
+              :compiler {:output-to     "out/test/node/soundcloud_cli.js"
+                         :output-dir    "out/test/node"
+                         :pretty-print  true
+                         :optimizations :simple}}]
 
      :test-commands {"unit-tests" ["node" :node-runner "out/test/node/soundcloud_cli.js"]}}
 
