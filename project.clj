@@ -6,7 +6,8 @@
                  [org.clojure/clojurescript "0.0-3165"]
                  [org.clojure/core.async "0.1.346.0-17112a-alpha"]]
 
-  :node-dependencies [[source-map-support "0.2.10"]]
+  :node-dependencies [[source-map-support "0.2.10"]
+                      [request "2.55.0"]]
 
   :plugins [[lein-cljsbuild "1.0.5"]
             [lein-npm "0.5.0"]
