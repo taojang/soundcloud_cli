@@ -6,6 +6,8 @@
 
 (def base-url "https://api.soundcloud.com")
 
+(def base-url-v2 "https://api-v2.soundcloud.com")
+
 (defn- query
   "returns a channel will deliver nil when error occurred, otherwise
   return the result of apply success-fn.
@@ -84,4 +86,15 @@
       (<! (query opts
                  parse-body
                  (err-cb "Error found while getting current logged in user")
+                 time-out)))))
+
+(defn get-stream
+  [token time-out & offset]
+  (go
+    (let [opts {:uri (str base-url-v2 "/stream")
+                :method "GET"
+                :qs {:oauth_token token}}]
+      (<! (query opts
+                 parse-body
+                 (err-cb "Error found while getting stream of current logged in user")
                  time-out)))))
