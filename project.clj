@@ -9,7 +9,8 @@
                  [shodan "0.4.2"]]
 
   :node-dependencies [[source-map-support "0.2.10"]
-                      [request "2.55.0"]]
+                      [request "2.55.0"]
+                      [play "0.5.0"]]
 
   :plugins [[lein-cljsbuild "1.0.5"]
             [lein-npm "0.5.0"]

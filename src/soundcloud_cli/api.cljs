@@ -2,7 +2,7 @@
   (:require [soundcloud-cli.http :as http]
             [cljs.core.async :as async :refer [<! >! alts! close! chan timeout]]
             [shodan.console :as console :include-macros true])
-  (:require-macros [cljs.core.async.macros :as am :refer [go go-loop]]))
+  (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]))
 
 (def base-url "https://api.soundcloud.com")
 
@@ -16,13 +16,13 @@
   (go
     (let [tc     (timeout time-out)
           res-ch (http/request opts)]
-      (if-let [[res _] (alts! [res-ch tc])]
-        (if (and (nil? (:err res)) (= 200 (:status res)))
-          (success-fn (.parse js/JSON (:body res)))
-          (do
-            (failure-fn res)
-            nil))
-        :time-out-err))))
+      (alt!
+        tc :time-out-err
+        res-ch ([v _] (if (and (nil? (:err v)) (= 200 (:status v)))
+                        (success-fn (.parse js/JSON (:body v)))
+                        (do
+                          (failure-fn v)
+                          nil)))))))
 
 (defn- err-cb
   [msg]
